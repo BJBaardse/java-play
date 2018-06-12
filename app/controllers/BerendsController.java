@@ -1,30 +1,92 @@
 package controllers;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import jwt.JwtControllerHelper;
+import jwt.VerifiedJwt;
+import play.Logger;
+import play.libs.Json;
+import play.mvc.Controller;
+import play.mvc.Result;
 
+import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Optional;
 import models.Categorie;
 import models.Orders;
 import models.Product;
 import models.User;
+import jwt.JwtControllerHelper;
+import jwt.JwtValidator;
+import jwt.VerifiedJwt;
 import play.mvc.*;
 import services.HibernateTest;
 import services.UserService;
 import views.html.*;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 import play.libs.Json;
 import play.mvc.Http.RequestBody;
-import javax.inject.Inject;
 import javax.persistence.criteria.Order;
+import javax.inject.Inject;
 
+import play.Logger;
 import play.libs.Json;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import services.UserService;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.Optional;
 
 /**
  * This controller contains an action to handle HTTP requests
  * to the application's home page.
  */
 public class BerendsController extends Controller {
+    @Inject
+    private JwtControllerHelper jwtControllerHelper;
+
+
+
+    public Result generateSignedToken() throws UnsupportedEncodingException {
+        return ok("signed token: " + getSignedToken((long) 1));
+    }
+    private String getSignedToken(Long userId) throws UnsupportedEncodingException {
+        String secret = "Berendsgrotegeheim";
+
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        return JWT.create()
+                .withIssuer("ThePlayApp")
+                .withClaim("user_id", userId)
+                .withExpiresAt(Date.from(ZonedDateTime.now(ZoneId.systemDefault()).plusMinutes(10).toInstant()))
+                .sign(algorithm);
+    }
+    public Result requiresJwt() {
+        return jwtControllerHelper.verify(request(), res -> {
+            if (res.left.isPresent()) {
+                return forbidden(res.left.get().toString());
+            }
+
+            VerifiedJwt verifiedJwt = res.right.get();
+            Logger.debug("{}", verifiedJwt);
+
+            ObjectNode result = Json.newObject();
+            result.put("access", "granted");
+            result.put("secret_data", "birds fly");
+            return ok(result);
+        });
+    }
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -68,7 +130,9 @@ public class BerendsController extends Controller {
         item.setNaam("Tijgerbrood");
         item.setPrijs(12.11);
         test.create(item);
-        cat.setProductsInCat(cat.getProductsInCat().add(item));
+        List<Product> products = null;
+        products.add(item);
+        cat.setProductsInCat(products);
         test.create(cat);
 
         return ok("user created?");
@@ -93,5 +157,6 @@ public class BerendsController extends Controller {
     public Result main() {
         return ok("nice");
     }
+
 
 }

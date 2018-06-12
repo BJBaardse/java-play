@@ -19,7 +19,9 @@ libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
 libraryDependencies += javaJdbc
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.46"
-
+libraryDependencies += guice
+libraryDependencies += ws
+libraryDependencies += "com.auth0" % "java-jwt" % "3.3.0"
 libraryDependencies ++= Seq(
   javaJpa,
   "com.jason-goodwin" %% "authentikat-jwt" % "0.4.5",

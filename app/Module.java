@@ -1,6 +1,10 @@
 import com.google.inject.AbstractModule;
 import java.time.Clock;
 
+import jwt.JwtControllerHelper;
+import jwt.JwtControllerHelperImpl;
+import jwt.JwtValidator;
+import jwt.JwtValidatorImpl;
 import services.ApplicationTimer;
 import services.AtomicCounter;
 import services.Counter;
@@ -19,6 +23,8 @@ public class Module extends AbstractModule {
 
     @Override
     public void configure() {
+        bind(JwtValidator.class).to(JwtValidatorImpl.class).asEagerSingleton();
+        bind(JwtControllerHelper.class).to(JwtControllerHelperImpl.class).asEagerSingleton();
         // Use the system clock as the default implementation of Clock
         bind(Clock.class).toInstance(Clock.systemDefaultZone());
         // Ask Guice to create an instance of ApplicationTimer when the

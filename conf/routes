@@ -37,3 +37,7 @@ GET     /gettest/categorie          controllers.TestGetEntityController.getCateg
 DELETE    /delete/user                controllers.BerendsController.deleteUserID()
 
 POST    /add/user                   controllers.BerendsController.adduser(naam: String)
+
+POST    /login/gettoken             controllers.BerendsController.generateSignedToken()
+
+POST    /login/testtoken            controllers.BerendsController.requiresJwt()

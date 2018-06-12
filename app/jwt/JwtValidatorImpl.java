@@ -20,9 +20,9 @@ public class JwtValidatorImpl implements JwtValidator {
 
     @Inject
     public JwtValidatorImpl(Config config) throws UnsupportedEncodingException {
-        this.secret = config.getString("play.http.secret.key");
 
-        Algorithm algorithm = Algorithm.HMAC256(secret);
+
+        Algorithm algorithm = Algorithm.HMAC256("Berendsgrotegeheim");
         verifier = JWT.require(algorithm)
                 .withIssuer("ThePlayApp")
                 .build();

@@ -17,6 +17,7 @@ public class JwtControllerHelperImpl implements JwtControllerHelper {
     private static final String ERR_AUTHORIZATION_HEADER = "ERR_AUTHORIZATION_HEADER";
     private JwtValidator jwtValidator;
 
+    @Inject
     public JwtControllerHelperImpl(JwtValidator jwtValidator) {
         this.jwtValidator = jwtValidator;
     }
