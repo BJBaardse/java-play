@@ -5,6 +5,8 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @NamedQueries({
@@ -25,6 +27,18 @@ public class Orders implements Serializable{
 
     @ManyToOne
     private User owner;
+
+    @ManyToMany(mappedBy = "orderslist")
+    private List<Product> productslist;
+
+
+    public List<Product> getProductslist() {
+        return productslist;
+    }
+
+    public void setProductslist(List<Product> productslist) {
+        this.productslist = productslist;
+    }
 
     @Override
     public String toString() {

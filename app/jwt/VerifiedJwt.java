@@ -6,5 +6,6 @@ public interface VerifiedJwt {
     String getHeader();
     String getPayload();
     String getIssuer();
+    String getUser();
     Date getExpiresAt();
 }

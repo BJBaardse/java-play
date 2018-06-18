@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jwt.JwtControllerHelper;
 import jwt.VerifiedJwt;
+import models.*;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -14,13 +15,8 @@ import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Optional;
-import models.Categorie;
-import models.Orders;
-import models.Product;
-import models.User;
+import java.util.*;
+
 import jwt.JwtControllerHelper;
 import jwt.JwtValidator;
 import jwt.VerifiedJwt;
@@ -32,7 +28,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.List;
+
 import play.libs.Json;
 import play.mvc.Http.RequestBody;
 import javax.persistence.criteria.Order;
@@ -60,7 +56,7 @@ public class BerendsController extends Controller {
 
 
     public Result generateSignedToken() throws UnsupportedEncodingException {
-        return ok("signed token: " + getSignedToken((long) 1));
+        return ok("signed token: " + getSignedToken(5L));
     }
     private String getSignedToken(Long userId) throws UnsupportedEncodingException {
         String secret = "Berendsgrotegeheim";
@@ -82,6 +78,7 @@ public class BerendsController extends Controller {
             Logger.debug("{}", verifiedJwt);
 
             ObjectNode result = Json.newObject();
+           result.put("ja", verifiedJwt.getUser());
             result.put("access", "granted");
             result.put("secret_data", "birds fly");
             return ok(result);
@@ -115,11 +112,6 @@ public class BerendsController extends Controller {
         HibernateTest test = new HibernateTest();
         test.create(newuser);
 
-        Orders order = new Orders();
-        order.setOwner(newuser);
-        order.setCreatedDate("vandaag");
-        order.setPlannedDate("morgen");
-        test.create(order);
 
         Categorie cat = new Categorie();
         cat.setCategorienaam("brood");
@@ -130,12 +122,32 @@ public class BerendsController extends Controller {
         item.setNaam("Tijgerbrood");
         item.setPrijs(12.11);
         test.create(item);
-        List<Product> products = null;
+        ProductCustom item2 = new ProductCustom();
+        item2.setNaam("Custom Tijgerbrood");
+        item2.setPrijs(12.15);
+        item2.setExtras("lmao extra is so extra");
+        test.create(item2);
+
+
+        Orders order = new Orders();
+        order.setOwner(newuser);
+        order.setCreatedDate("vandaag");
+        order.setPlannedDate("morgen");
+        List<Product> productslist = new ArrayList<>();
+        productslist.add(item);
+        order.setProductslist(productslist);
+        test.create(order);
+
+
+        List<Product> products = new ArrayList<>();
         products.add(item);
         cat.setProductsInCat(products);
         test.create(cat);
 
-        return ok("user created?");
+
+
+
+        return ok("ok");
     }
     public Result adduser(String naam){
         User newuser = new User();

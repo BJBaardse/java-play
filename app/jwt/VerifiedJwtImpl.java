@@ -34,7 +34,10 @@ public class VerifiedJwtImpl implements VerifiedJwt {
     public String getIssuer() {
         return issuer;
     }
-
+    @Override
+    public String getUser(){
+        return userId.toString();
+    }
     @Override
     public Date getExpiresAt() {
         return expiresAt;
